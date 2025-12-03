@@ -229,3 +229,17 @@ A aplicação utiliza o **H2 Database em memória**, ideal para desenvolvimento 
 - **Porta padrão da aplicação:** `8080`
 - **Console do H2:** `http://localhost:8080/h2-console`
 
+## ⚡ **Desempenho: REST vs GraphQL**
+
+Durante os testes de performance realizados com a mesma consulta (`listar todos os usuários`), foi possível observar uma diferença significativa entre as duas abordagens utilizadas pela API:
+
+- **REST (GET /api/users)**  
+  Tempo médio de resposta: **305 ms**
+
+- **GraphQL (query { users { ... } })**  
+  Tempo médio de resposta: **99 ms**
+
+Essa diferença ocorre porque o **GraphQL** permite buscar exatamente os campos necessários em uma única operação otimizada, enquanto o **REST** tradicional retorna estruturas completas conforme o endpoint definido. Assim, o GraphQL tende a ser mais eficiente em cenários onde há necessidade de selecionar dados específicos ou reduzir sobrecarga de transporte.
+
+Esses resultados reforçam a vantagem do GraphQL em operações de leitura mais enxutas, oferecendo melhor tempo de resposta e menor tráfego de dados.
+
