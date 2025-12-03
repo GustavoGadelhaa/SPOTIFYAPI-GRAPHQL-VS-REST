@@ -229,17 +229,60 @@ A aplicação utiliza o **H2 Database em memória**, ideal para desenvolvimento 
 - **Porta padrão da aplicação:** `8080`
 - **Console do H2:** `http://localhost:8080/h2-console`
 
-## ⚡ **Desempenho: REST vs GraphQL**
+## 🚀 Comparação de Performance – REST vs GraphQL
 
-Durante os testes de performance realizados com a mesma consulta (`listar todos os usuários`), foi possível observar uma diferença significativa entre as duas abordagens utilizadas pela API:
+Para medir o desempenho real de cada abordagem, foi realizado um teste utilizando o mesmo conjunto de dados:  
+um **dump de 300 usuários**, carregado tanto para a API REST quanto para a API GraphQL.
+
+A seguir estão as capturas de tela dos tempos obtidos durante a requisição de **listar todos os usuários**:
+
+---
+
+### 🟣 **GraphQL – Query `users`**
+Tempo médio: **~99ms**
+
+![GraphQL Performance](https://github.com/GustavoGadelhaa/SPOTIFYAPI-GRAPHQL-VS-REST/blob/main/Captura%20de%20tela%20de%202025-12-03%2011-10-12.png)
+
+---
+
+### 🔵 **REST – GET `/api/users`**
+Tempo médio: **~305ms**
+
+![REST Performance](https://github.com/GustavoGadelhaa/SPOTIFYAPI-GRAPHQL-VS-REST/blob/main/Captura%20de%20tela%20de%202025-12-03%2011-01-04.png)
+
+---
+
+## ⚡ Resultados Observados
 
 - **REST (GET /api/users)**  
-  Tempo médio de resposta: **305 ms**
+  Primeira requisição: **305 ms**
 
 - **GraphQL (query { users { ... } })**  
-  Tempo médio de resposta: **99 ms**
+  Primeira requisição: **99 ms**
 
-Essa diferença ocorre porque o **GraphQL** permite buscar exatamente os campos necessários em uma única operação otimizada, enquanto o **REST** tradicional retorna estruturas completas conforme o endpoint definido. Assim, o GraphQL tende a ser mais eficiente em cenários onde há necessidade de selecionar dados específicos ou reduzir sobrecarga de transporte.
+Esses valores mostram que o **GraphQL foi aproximadamente 3x mais rápido** na **primeira execução do endpoint**, mesmo acessando exatamente os mesmos dados.
 
-Esses resultados reforçam a vantagem do GraphQL em operações de leitura mais enxutas, oferecendo melhor tempo de resposta e menor tráfego de dados.
+---
 
+## 🔁 Sobre a Segunda Execução dos Endpoints
+
+Após testes repetidos, foi observado que **a partir da segunda requisição**, tanto no REST quanto no GraphQL, o tempo de resposta cai para cerca de **1/3 do tempo inicial**.  
+Isso ocorre por causa de:
+
+- Cache interno da JPA / Hibernate  
+- Otimizações do próprio Spring Boot  
+- Hotspot JVM otimizando o código após a primeira execução
+
+👉 **Mesmo assim, para a comparação oficial, foi contabilizado apenas o tempo da *primeira requisição***, que melhor representa um cenário real de produção sem aquecimento de cache.
+
+---
+
+## 📊 Conclusão
+
+Com base nos testes:
+
+- GraphQL demonstrou **menor latência**, melhor aproveitamento de rede e consulta otimizada.  
+- REST continua simples e direto, mas retorna mais dados e faz mais round-trips, impactando o tempo.  
+- O *dump* de 300 usuários ajudou a evidenciar ainda mais essas diferenças de desempenho.
+
+GraphQL mostrou-se a alternativa mais performática para consultas maiores e com seleção de campos específicos.
